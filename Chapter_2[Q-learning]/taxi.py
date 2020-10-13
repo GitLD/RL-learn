@@ -4,22 +4,24 @@ import random
 from matplotlib import pyplot as plt
 
 # Hyperparameter
-total_episodes = 20000
-learning_rate = 0.8
+total_episodes = 50000
 max_steps = 99
-gamma = 0.95
+
+learning_rate = 0.7
+gamma = 0.618
 
 epsilon = 1.0
 max_epsilon = 1.0
 min_epsilon = 0.01
-decay_rate = 0.005
+decay_rate = 0.01
 
-test_episodes = 15
+test_episodes = 100
 train = False
 test = True
 
+
 # Make Env
-env = gym.make('FrozenLake-v0')
+env = gym.make("Taxi-v3")
 
 # Initialize Q-Table
 action_size = env.action_space.n
@@ -60,7 +62,7 @@ if train:
 
         epsilon = min_epsilon + (max_epsilon - min_epsilon) * np.exp(-decay_rate * episode)
         rewards.append(total_rewards)
-    np.save('Frozen-Lake-Qtable.npy', qtable)
+    np.save('Taxi-Qtable.npy', qtable)
     print('Score over time: ' + str(sum(rewards)/total_episodes))
     print('Q-Table'.center(40,'*'))
     print(qtable)
@@ -69,13 +71,13 @@ if train:
     plt.xlabel('Train Episode')
     plt.ylabel('Average Total Rewards')
     plt.xlim(0, total_episodes)
-    plt.ylim(bottom=0)
+    plt.ylim(0, 15)
     plt.show()
 
 # Test
 if test:
     rewards = []
-    qtable = np.load('Frozen-Lake-Qtable.npy')
+    qtable = np.load('Taxi-Qtable.npy')
     for episode in range(test_episodes):
         state = env.reset()
         step = 0
@@ -97,11 +99,11 @@ if test:
 
         rewards.append(total_rewards)
     plt.bar(range(1, test_episodes+1), rewards)
-    plt.title("Test Process[Successful Rate:%.2f%%]"%(sum(rewards)/len(rewards)*100))
+    plt.title("Test Process[Average Score:%.2f]"%(sum(rewards)/len(rewards)))
     plt.xlabel('Test Episode')
     plt.ylabel('Total Rewards')
-    # plt.xlim(0, test_episodes+1)
+    plt.xlim(0, test_episodes+1)
     plt.ylim(bottom=0)
-    plt.show()
+    plt.show()        
 
 env.close()
